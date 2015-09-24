@@ -5,9 +5,11 @@ import numpy as np
 import re
 import os
 import itertools
+from Bio import SeqIO
 
 # TODO:
 #   - Move the change of NoneType to np.NAN to getAlignedPhiPsi()
+#   - Write parsing of pir/ali file in seperate function
 
 class AlignStruc():
     '''Classes for each HOMSTRAD pdb'''
@@ -19,11 +21,12 @@ class AlignStruc():
         self.isExpanded = False
 
         # Load pir file
-        with open(pir_file_path, "r") as myfile:
-            pir_file = myfile.read()
+        # Needs own function
+        handle = open(pir_file_path, "rU")
+        strucParse = struc = SeqIO.parse(handle, "pir")
+        self.pir_file_list = [(i.id, str(i.seq)) for i in struc]
 
-        self.pir_file_list = re.findall(r'(?!C;)((?<=>P1;)[1-9][0-9a-z]+)(?:\n.*\n)([\nA-Z-/]*(?=\*))', pir_file)
-
+        # Load pdb file
         self.family = self.parser.get_structure("Name", pdb_file_path)
 
     def printSeqs(self):
