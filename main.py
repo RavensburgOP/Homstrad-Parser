@@ -128,8 +128,7 @@ class SingleStruc(AlignStruc):
 
         # Name and seq from pir_seq
         self.Name = pir_seq[0]
-        pattern = re.compile('[^_a-zA-Z0-9-]+')
-        self.seq = pattern.sub('', pir_seq[1])
+        self.seq = pir_seq[1]
 
     def __str__(self):
         return "%s \n%s" % (self.seq, self.getPdbSeq())
@@ -182,7 +181,6 @@ class SingleStruc(AlignStruc):
         if (len(self.peptides) > 1):
             tempList = []
             offset = 0
-            print "Need offset"
             for i, pepchain in enumerate(self.peptides):
 
                 # Compensates for the index offset in the pdb file
