@@ -29,6 +29,12 @@ class AlignStruc():
         # Load pdb file
         self.family = self.parser.get_structure("Name", pdb_file_path)
 
+    def __getitem__(self, key):
+        if self.isExpanded == True:
+            return self.subStrucList[self.subStrucDict[key]]
+        else:
+            return
+
     def printSeqs(self):
         for i in self.subStrucList:
             print i, "\n"
@@ -79,9 +85,11 @@ class AlignStruc():
             print "Unequal lengths"
             return
         self.subStrucList = []
+        self.subStrucDict = {}
         for strucId, structure in enumerate(self.family[0]):
             tempSubStruc = SingleStruc(structure, self.pir_file_list[strucId])
             self.subStrucList.append(tempSubStruc)
+            self.subStrucDict[tempSubStruc.Name] = strucId
             self.isExpanded = True
 
     # NOT USED YET
@@ -242,6 +250,8 @@ class SingleStruc(AlignStruc):
         return np.vstack((helices, sheets))
 
     def getPhiPsiAA(self):
+        '''Returns a list of first dihedral angles, then amino acid for
+        position'''
         tempList = []
         for i, dihedral in enumerate(self.getPhiPsi()):
             if type(dihedral) == tuple:
