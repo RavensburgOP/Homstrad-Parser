@@ -23,8 +23,8 @@ class AlignStruc():
         # Load pir file
         # Needs own function
         handle = open(pir_file_path, "rU")
-        strucParse = struc = SeqIO.parse(handle, "pir")
-        self.pir_file_list = [(i.id, str(i.seq)) for i in struc]
+        struc = SeqIO.parse(handle, "pir")
+        self.pir_file_list = [(i.id, str(i.seq), i.description.split(":")[-1]) for i in struc]
 
         # Load pdb file
         self.family = self.parser.get_structure("Name", pdb_file_path)
@@ -137,6 +137,10 @@ class SingleStruc(AlignStruc):
         # Name and seq from pir_seq
         self.Name = pir_seq[0]
         self.seq = pir_seq[1]
+        if pir_seq[2] < 0:
+            self.rFactor = -1000
+        else:
+            self.rFactor = pir_seq[2]
 
     def __str__(self):
         return "%s \n%s" % (self.seq, self.getPdbSeq())
@@ -151,7 +155,7 @@ class SingleStruc(AlignStruc):
         pepSeq = ''
         for pep in self.peptides:
             pepSeq += pep.get_sequence()
-        return pepSeq
+        return str(pepSeq)
 
     def getSecStruc(self):
         '''Pipes the pdb structure to a perl script, that translates it to
@@ -256,11 +260,11 @@ class SingleStruc(AlignStruc):
         for i, dihedral in enumerate(self.getPhiPsi()):
             if type(dihedral) == tuple:
                 if dihedral[0] is None:
-                    tempList.append((("NA", dihedral[1]), self.seq[i]))
+                    tempList.append(((-1000, dihedral[1]), self.seq[i]))
                 elif dihedral[1] is None:
-                    tempList.append(((dihedral[0], "NA"), self.seq[i]))
+                    tempList.append(((dihedral[0], -1000), self.seq[i]))
                 else:
                     tempList.append((dihedral, self.seq[i]))
             else:
-                tempList.append((("NA", "NA"), '-'))
+                tempList.append(((-1000, -1000), '-'))
         return [(a,b,c) for (a,b),c in tempList]
