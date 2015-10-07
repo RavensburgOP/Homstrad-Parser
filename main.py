@@ -24,7 +24,7 @@ class AlignStruc():
         # Needs own function
         handle = open(pir_file_path, "rU")
         struc = SeqIO.parse(handle, "pir")
-        self.pir_file_list = [(i.id, str(i.seq), i.description.split(":")[-1]) for i in struc]
+        self.pir_file_list = [(i.id, str(i.seq), float(i.description.split(":")[-1])) for i in struc]
 
         # Load pdb file
         self.family = self.parser.get_structure("Name", pdb_file_path)
